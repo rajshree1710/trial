@@ -1,0 +1,32 @@
+name: Terraform Deployment to GCP
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on pushes to the 'main' branch
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.6  # Adjust to the version you are using
+
+      # Step 3: Authenticate with Terraform Cloud
+      - name: Authenticate Terraform Cloud
+        env:
+          TFC_TOKEN: ${{ secrets.TFC_TOKEN }}  # Terraform Cloud API Token
+        run: |
+          terraform login <<EOF
+          $TFC_TOKEN
+          EOF
+
+      # Step 4: Initialize Terraform
